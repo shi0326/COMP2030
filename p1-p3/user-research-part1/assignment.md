@@ -29,7 +29,8 @@ o	Thematic coding for Interview: what is the biggest problem during learning ski
 •	Case studies: some old problem that got the answer could be helpful for new one.
 o	Execution: select 4-5 students journey in one semester who have the same topics, schedule, and background (undergrad/graduate)
 2.	User personas
-   <img width="624" height="430" alt="image" src="https://github.com/user-attachments/assets/eecedf8d-2f73-4fe7-90cf-15d5c4853232" />
+3.	<img width="624" height="430" alt="image" src="https://github.com/user-attachments/assets/f78f0f6d-95bb-4d27-a749-c0fba1b0d56e" />
+
 3.3.	Competitor analysis
 •	Linkdln Learning
 o	Strengths: high quality envirnment, many professional courses, shared skills with well- structure by certificates, connect with career development.
