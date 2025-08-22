@@ -1,21 +1,13 @@
 # COMP2030 User Research and Low Fidelity Design
 Calen, Daniel, Freddy, Phat, Shudipta
+
 ## Project Proposal
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## Website Concept: 
+- We are planning to build a website which is a centralized digital platform where students and university staff can access and manage   academic information. This website content **student record, staff details and profile, academic content and important announcement**. Moreover, It can make seamless communication to the student and university. Finally, our website can track student performance and enrollment system. This website can store academic documents instead of paperwork. Students and University staff can adapt the new features which is digital first work flows. Besides offer students track their academic journey and notify about the future academic activities.
+## Target Audience Profile:
+- **Primary audiences are Students, Teachers and Academic Staff**. Students can access their academic progress, records and essential information. Teachers can publish result and monitors student performance. Academic staff can manage students details, setup academic information and enrollment. **Secondary Audiences can be IT team and software team who can fix any bugs and problems**. Moreover, help students to fix any issues in profile and management.
+## Scope Statement: 
+- In the scope statement part it based on few things such as **security or user authentication, student profile management, dashboard, Tuition fees, help and many more**. In the user authentication system student can secure their personal details and reset their password. Moreover, students can enable two factor authentication system to protect cyber attack. Besides, Student can change their name, details, contacts number and many more. Secondly, on dashboard section student can manage their notification system, see their time and dates of the class. Teachers can release grades and update learning materials.
 
 ## User Research Report
 
