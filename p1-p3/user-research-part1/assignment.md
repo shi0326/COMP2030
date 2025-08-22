@@ -40,7 +40,7 @@ To empathize with the target audience for **Flinders Uni Skill Share (FUSS)**, s
 
 (./Images/![alt text](humanFactorslmage5.png))
 
-(./Images/![alt text](Persona #2.jpg))
+(./Images/![alt text](c:\Users\Admin\Downloads\Persona #2.jpg))
 
 ### 3. Competitor Analysis  
 
