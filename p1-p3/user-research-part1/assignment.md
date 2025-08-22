@@ -38,9 +38,9 @@ To empathize with the target audience for **Flinders Uni Skill Share (FUSS)**, s
 ###2.	User personas
 
 
-![Bui Nhat Tan Persona](./Images/image.png)
+(./Images/![alt text](humanFactorslmage5.png))
 
-![Second Persona](./Images/humanFactorsImage1.png)
+(./Images/c:\Users\Admin\Documents\GitHub\COMP2030-Assignment\p1-p3\user-research-part1\Images\humanFactorslmage6.jpg)
 
 ### 3. Competitor Analysis  
 
