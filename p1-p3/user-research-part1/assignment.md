@@ -18,7 +18,8 @@ Calen, Daniel, Freddy, Phat, Shudipta
 
 
 ## User Research Report
-###1.	Research Methods
+
+### 1.	Research Methods
 
 To empathize with the target audience for **Flinders Uni Skill Share (FUSS)**, several methods were used such as observational studies (Government Digital Service, n.d.), interviews/surveys, and case studies (Nielsen & Loranger, n.d.):
 
@@ -34,10 +35,14 @@ To empathize with the target audience for **Flinders Uni Skill Share (FUSS)**, s
     - How can I help you?  
 
 - **Case studies**: some old problems that were solved could be helpful for new ones.  
-  - **Execution**: select 4–5 students’ journeys in one semester who have the same topics, schedule, and background (undergraduate/graduate).  
-###2.	User personas
+  - **Execution**: select 4–5 students’ journeys in one semester who have the same topics, schedule, and background (undergraduate/graduate).
+  
+### 2.	User personas
+
 <img width="624" height="430" alt="image" src="https://github.com/user-attachments/assets/daf2e79a-77e2-4437-9904-e85b0f21f871" />
+
 <img width="624" height="468" alt="image" src="https://github.com/user-attachments/assets/7634831b-5a43-4fca-962c-6b2302bf0950" />
+
 ### 3. Competitor Analysis  
 
 - **LinkedIn Learning**  
