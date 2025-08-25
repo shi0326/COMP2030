@@ -119,10 +119,11 @@ To empathize with the target audience for **Flinders Uni Skill Share (FUSS)**, s
 
 
 
-## Low-fidelity wireframeshttps:
-//github.com/Phat2k4/COMP2030-Assignment/blob/nguy1687/p1-p3/user-research-part1/Images/start.png![FUSS Chat Page](./images/fuss.png)
+## Low-fidelity wireframes
+![Start Page](./Images/start.png)
+![FUSS Chat Page](./Images/fuss.png)
 ![Edit Page](./Images/edit.png)
 ![Bio Page](./Images/bio.png)
 ![Skills Page](./Images/skills.png)
 ![Storyboard](./Images/storyboard.png)
-[def]: image.png
+
