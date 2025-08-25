@@ -120,8 +120,10 @@ To empathize with the target audience for **Flinders Uni Skill Share (FUSS)**, s
 
 
 ## Low-fidelity wireframes
-![alt text](start-1.png)
+![Start Page](./Images/start.png)
+![FUSS Chat Page](./Images/fuss.png)
+![Edit Page](./Images/edit.png)
+![Bio Page](./Images/bio.png)
+![Skills Page](./Images/skills.png)
+![Storyboard](./Images/storyboard.png)
 
-
-
-[def]: image.png
