@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - FUSS Platform</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 1.5rem;
+            min-height: calc(100vh - 4rem);
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        .stat-card {
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .activity-indicator {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .chart-container {
+            min-height: 300px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .status-online {
+            color: #22c55e;
+        }
+        
+        .status-offline {
+            color: #ef4444;
+        }
+        
+        .priority-high {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .priority-medium {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .priority-low {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+        }
+    </style>
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Ffussplatf6334back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.8"></script>
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Admin Header -->
+    <header class="bg-surface shadow-card border-b border-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Admin Badge -->
+                <div class="flex items-center">
+                    <svg class="w-10 h-10 text-primary" viewBox="0 0 40 40" fill="currentColor">
+                        <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 20h16M20 12v16" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="20" cy="20" r="3" fill="currentColor"/>
+                    </svg>
+                    <div class="ml-3">
+                        <span class="text-xl font-bold text-primary">FUSS Platform</span>
+                        <span class="ml-2 px-2 py-1 bg-error-100 text-error-700 text-xs font-semibold rounded-full">ADMIN</span>
+                    </div>
+                </div>
+                
+                <!-- Admin Navigation -->
+                <nav class="hidden md:flex space-x-6">
+                    <button onclick="showTab('overview')" class="tab-btn active text-primary font-medium border-b-2 border-primary pb-1">Overview</button>
+                    <button onclick="showTab('users')" class="tab-btn text-text-secondary hover:text-primary transition-fast">Users</button>
+                    <button onclick="showTab('services')" class="tab-btn text-text-secondary hover:text-primary transition-fast">Services</button>
+                    <button onclick="showTab('disputes')" class="tab-btn text-text-secondary hover:text-primary transition-fast">Disputes</button>
+                    <button onclick="showTab('system')" class="tab-btn text-text-secondary hover:text-primary transition-fast">System</button>
+                </nav>
+                
+                <!-- Admin Tools -->
+                <div class="flex items-center space-x-4">
+                    <!-- System Status -->
+                    <div class="flex items-center space-x-2">
+                        <div class="activity-indicator w-3 h-3 bg-success-500 rounded-full"></div>
+                        <span class="text-sm text-text-secondary hidden sm:block">System Online</span>
+                    </div>
+                    
+                    <!-- Alerts -->
+                    <button class="relative p-2 text-text-secondary hover:text-error-600 transition-fast">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.888-.833-2.598 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                        <span class="absolute -top-1 -right-1 bg-error-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">7</span>
+                    </button>
+                    
+                    <!-- Admin Profile -->
+                    <div class="flex items-center space-x-2">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Admin" class="w-8 h-8 rounded-full object-cover" />
+                        <span class="text-text-primary font-medium hidden sm:block">Admin</span>
+                        <a href="student_login.html" class="text-text-secondary hover:text-error-600 transition-fast">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Overview Tab -->
+        <div id="overview-tab" class="tab-content active">
+            <!-- Key Performance Indicators -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-text-primary mb-6">Platform Overview</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Active Users -->
+                    <div class="stat-card bg-surface rounded-lg shadow-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-text-secondary text-sm font-medium">Active Users</p>
+                                <p class="text-3xl font-bold text-text-primary">2,847</p>
+                                <p class="text-success-600 text-sm flex items-center mt-1">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    +12% from last month
+                                </p>
+                            </div>
+                            <div class="bg-primary-100 p-3 rounded-lg">
+                                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Transactions -->
+                    <div class="stat-card bg-surface rounded-lg shadow-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-text-secondary text-sm font-medium">Daily Transactions</p>
+                                <p class="text-3xl font-bold text-text-primary">1,523</p>
+                                <p class="text-success-600 text-sm flex items-center mt-1">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    +8% from yesterday
+                                </p>
+                            </div>
+                            <div class="bg-accent-100 p-3 rounded-lg">
+                                <svg class="w-8 h-8 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credit Circulation -->
+                    <div class="stat-card bg-surface rounded-lg shadow-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-text-secondary text-sm font-medium">Credits Circulating</p>
+                                <p class="text-3xl font-bold text-text-primary">84,392</p>
+                                <p class="text-text-secondary text-sm mt-1">24h volume: 12,847</p>
+                            </div>
+                            <div class="bg-secondary-100 p-3 rounded-lg">
+                                <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Health -->
+                    <div class="stat-card bg-surface rounded-lg shadow-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-text-secondary text-sm font-medium">System Health</p>
+                                <p class="text-3xl font-bold text-success-600">99.2%</p>
+                                <p class="text-text-secondary text-sm mt-1">Uptime this month</p>
+                            </div>
+                            <div class="bg-success-100 p-3 rounded-lg">
+                                <svg class="w-8 h-8 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Dashboard -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Usage Analytics -->
+                <div class="bg-surface rounded-lg shadow-card p-6">
+                    <h3 class="text-xl font-semibold text-text-primary mb-4">Platform Usage Trends</h3>
+                    <div class="chart-container">
+                        <div class="text-center">
+                            <svg class="w-16 h-16 text-primary mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            <p class="text-text-secondary">Interactive analytics charts would be displayed here</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Skills -->
+                <div class="bg-surface rounded-lg shadow-card p-6">
+                    <h3 class="text-xl font-semibold text-text-primary mb-4">Top Trending Skills</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-primary-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                                <div>
+                                    <h4 class="font-medium text-text-primary">Python Programming</h4>
+                                    <p class="text-sm text-text-secondary">847 active sessions</p>
+                                </div>
+                            </div>
+                            <span class="text-success-600 font-semibold">+23%</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-accent-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-accent-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">2</div>
+                                <div>
+                                    <h4 class="font-medium text-text-primary">Mathematics Tutoring</h4>
+                                    <p class="text-sm text-text-secondary">623 active sessions</p>
+                                </div>
+                            </div>
+                            <span class="text-success-600 font-semibold">+18%</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-secondary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">3</div>
+                                <div>
+                                    <h4 class="font-medium text-text-primary">Essay Writing</h4>
+                                    <p class="text-sm text-text-secondary">456 active sessions</p>
+                                </div>
+                            </div>
+                            <span class="text-success-600 font-semibold">+15%</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-gray-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">4</div>
+                                <div>
+                                    <h4 class="font-medium text-text-primary">Graphic Design</h4>
+                                    <p class="text-sm text-text-secondary">342 active sessions</p>
+                                </div>
+                            </div>
+                            <span class="text-success-600 font-semibold">+12%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-surface rounded-lg shadow-card p-6">
+                <h3 class="text-xl font-semibold text-text-primary mb-4">Recent Platform Activity</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-4 p-4 border border-border rounded-lg">
+                        <div class="bg-success-100 p-2 rounded-lg">
+                            <svg class="w-5 h-5 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-text-primary">New User Registration</h4>
+                                <span class="text-sm text-text-secondary">2 minutes ago</span>
+                            </div>
+                            <p class="text-sm text-text-secondary">Sarah Wilson joined from Engineering Department</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4 p-4 border border-border rounded-lg">
+                        <div class="bg-primary-100 p-2 rounded-lg">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-text-primary">Large Transaction Completed</h4>
+                                <span class="text-sm text-text-secondary">15 minutes ago</span>
+                            </div>
+                            <p class="text-sm text-text-secondary">125 FUSSCredits exchanged for Advanced Calculus tutoring</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4 p-4 border border-border rounded-lg">
+                        <div class="bg-accent-100 p-2 rounded-lg">
+                            <svg class="w-5 h-5 text-accent-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-text-primary">Outstanding Review Posted</h4>
+                                <span class="text-sm text-text-secondary">28 minutes ago</span>
+                            </div>
+                            <p class="text-sm text-text-secondary">Alex Chen received a 5-star review for JavaScript mentoring</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Management Tab -->
+        <div id="users-tab" class="tab-content">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-text-primary mb-4">User Management</h1>
+                
+                <!-- User Management Tools -->
+                <div class="bg-surface rounded-lg shadow-card p-6 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+                        <div class="flex items-center space-x-4">
+                            <div class="relative">
+                                <input type="text" placeholder="Search users..." class="pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 w-64" />
+                                <svg class="w-5 h-5 text-text-secondary absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                            <select class="border border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                <option>All Users</option>
+                                <option>Active Users</option>
+                                <option>Suspended</option>
+                                <option>Pending Verification</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Add User
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="bg-surface rounded-lg shadow-card overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">User</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Credits</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Rating</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Join Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-full object-cover" src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face" alt />
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-text-primary">Sarah Johnson</div>
+                                                <div class="text-sm text-text-secondary">sarah.johnson@flinders.edu.au</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800">
+                                            <div class="w-2 h-2 bg-success-500 rounded-full mr-1"></div>
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">1,247</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex text-accent-500">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                            </div>
+                                            <span class="ml-1 text-sm text-text-secondary">4.9</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">Jan 15, 2025</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-primary hover:text-primary-700 mr-3">Edit</button>
+                                        <button class="text-error-600 hover:text-error-800">Suspend</button>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-full object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt />
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-text-primary">Mike Rodriguez</div>
+                                                <div class="text-sm text-text-secondary">mike.rodriguez@flinders.edu.au</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <div class="w-2 h-2 bg-yellow-500 rounded-full mr-1"></div>
+                                            Pending Review
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">892</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex text-accent-500">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                            </div>
+                                            <span class="ml-1 text-sm text-text-secondary">4.2</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">Dec 8, 2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-success-600 hover:text-success-800 mr-3">Approve</button>
+                                        <button class="text-error-600 hover:text-error-800">Reject</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Management Tab -->
+        <div id="services-tab" class="tab-content">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-text-primary mb-4">Service Oversight</h1>
+                
+                <!-- Service Quality Control -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-surface rounded-lg shadow-card p-6">
+                        <h3 class="text-xl font-semibold text-text-primary mb-4">Approval Queue</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 border border-border rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-text-primary">Advanced Python Development</h4>
+                                    <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Pending</span>
+                                </div>
+                                <p class="text-sm text-text-secondary mb-3">Submitted by Alex Chen • Programming & Development</p>
+                                <div class="flex space-x-2">
+                                    <button class="btn btn-primary text-sm px-3 py-1">Approve</button>
+                                    <button class="btn bg-border text-text-primary hover:bg-gray-300 text-sm px-3 py-1">Review</button>
+                                    <button class="btn bg-error-100 text-error-700 hover:bg-error-200 text-sm px-3 py-1">Reject</button>
+                                </div>
+                            </div>
+
+                            <div class="p-4 border border-border rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-text-primary">Statistical Analysis Help</h4>
+                                    <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Pending</span>
+                                </div>
+                                <p class="text-sm text-text-secondary mb-3">Submitted by Emma Wilson • Mathematics & Statistics</p>
+                                <div class="flex space-x-2">
+                                    <button class="btn btn-primary text-sm px-3 py-1">Approve</button>
+                                    <button class="btn bg-border text-text-primary hover:bg-gray-300 text-sm px-3 py-1">Review</button>
+                                    <button class="btn bg-error-100 text-error-700 hover:bg-error-200 text-sm px-3 py-1">Reject</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface rounded-lg shadow-card p-6">
+                        <h3 class="text-xl font-semibold text-text-primary mb-4">Content Monitoring</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 border border-error-200 rounded-lg bg-error-50">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-text-primary">Reported Content</h4>
+                                    <span class="text-xs bg-error-100 text-error-800 px-2 py-1 rounded-full">High Priority</span>
+                                </div>
+                                <p class="text-sm text-text-secondary mb-3">Inappropriate language in service description</p>
+                                <div class="flex space-x-2">
+                                    <button class="btn bg-error-600 text-white hover:bg-error-700 text-sm px-3 py-1">Take Action</button>
+                                    <button class="btn bg-border text-text-primary hover:bg-gray-300 text-sm px-3 py-1">Investigate</button>
+                                </div>
+                            </div>
+
+                            <div class="p-4 border border-border rounded-lg">
+                                <h4 class="font-medium text-text-primary mb-2">Quality Alerts</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-text-secondary">Services below 3.0 rating</span>
+                                        <span class="text-sm font-medium text-error-600">3 services</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-text-secondary">Unresolved disputes</span>
+                                        <span class="text-sm font-medium text-yellow-600">7 cases</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Provider Performance -->
+                <div class="bg-surface rounded-lg shadow-card p-6">
+                    <h3 class="text-xl font-semibold text-text-primary mb-4">Provider Performance Monitoring</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Provider</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Services</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Avg Rating</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Completion Rate</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Issues</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt />
+                                            <div class="ml-3">
+                                                <div class="text-sm font-medium text-text-primary">Alex Chen</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">42</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">4.8</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">98.5%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-success-600">0</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800">
+                                            Excellent
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face" alt />
+                                            <div class="ml-3">
+                                                <div class="text-sm font-medium text-text-primary">Sarah Johnson</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">28</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">2.7</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary">76.2%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-error-600">3</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error-100 text-error-800">
+                                            Needs Attention
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disputes Management Tab -->
+        <div id="disputes-tab" class="tab-content">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-text-primary mb-4">Dispute Resolution</h1>
+                
+                <!-- Dispute Queue -->
+                <div class="mb-6">
+                    <div class="bg-surface rounded-lg shadow-card p-6">
+                        <h3 class="text-xl font-semibold text-text-primary mb-4">Active Disputes</h3>
+                        <div class="space-y-4">
+                            <!-- High Priority Dispute -->
+                            <div class="priority-high p-4 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-semibold text-text-primary">Service Not Delivered - Python Tutoring</h4>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs bg-error-100 text-error-800 px-2 py-1 rounded-full">High Priority</span>
+                                        <span class="text-xs text-text-secondary">Case #FD-2025-001</span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <p class="text-sm text-text-secondary mb-1">Complainant:</p>
+                                        <p class="text-sm font-medium text-text-primary">Lisa Chen (Student)</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-text-secondary mb-1">Respondent:</p>
+                                        <p class="text-sm font-medium text-text-primary">Mark Thompson (Provider)</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-text-secondary mb-4">Student paid 45 FUSSCredits but provider failed to show up for scheduled session. No communication provided.</p>
+                                <div class="flex space-x-3">
+                                    <button class="btn btn-primary text-sm px-4 py-2">Investigate</button>
+                                    <button class="btn bg-accent-100 text-accent-700 hover:bg-accent-200 text-sm px-4 py-2">Contact Provider</button>
+                                    <button class="btn bg-success-100 text-success-700 hover:bg-success-200 text-sm px-4 py-2">Refund Credits</button>
+                                </div>
+                            </div>
+
+                            <!-- Medium Priority Dispute -->
+                            <div class="priority-medium p-4 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-semibold text-text-primary">Quality Concerns - Essay Review</h4>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Medium Priority</span>
+                                        <span class="text-xs text-text-secondary">Case #FD-2025-002</span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <p class="text-sm text-text-secondary mb-1">Complainant:</p>
+                                        <p class="text-sm font-medium text-text-primary">James Wilson (Student)</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-text-secondary mb-1">Respondent:</p>
+                                        <p class="text-sm font-medium text-text-primary">Emma Davis (Provider)</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-text-secondary mb-4">Student claims the essay feedback was insufficient and didn't address the main concerns mentioned in the request.</p>
+                                <div class="flex space-x-3">
+                                    <button class="btn btn-primary text-sm px-4 py-2">Review Work</button>
+                                    <button class="btn bg-accent-100 text-accent-700 hover:bg-accent-200 text-sm px-4 py-2">Mediate</button>
+                                    <button class="btn bg-border text-text-primary hover:bg-gray-300 text-sm px-4 py-2">Close Case</button>
+                                </div>
+                            </div>
+
+                            <!-- Low Priority Dispute -->
+                            <div class="priority-low p-4 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-semibold text-text-primary">Schedule Conflict - Math Tutoring</h4>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs bg-success-100 text-success-800 px-2 py-1 rounded-full">Low Priority</span>
+                                        <span class="text-xs text-text-secondary">Case #FD-2025-003</span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <p class="text-sm text-text-secondary mb-1">Complainant:</p>
+                                        <p class="text-sm font-medium text-text-primary">Rachel Green (Student)</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-text-secondary mb-1">Respondent:</p>
+                                        <p class="text-sm font-medium text-text-primary">David Kim (Provider)</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-text-secondary mb-4">Both parties need to reschedule multiple times due to conflicting commitments. Seeking mediation for better scheduling.</p>
+                                <div class="flex space-x-3">
+                                    <button class="btn bg-accent-100 text-accent-700 hover:bg-accent-200 text-sm px-4 py-2">Schedule Mediation</button>
+                                    <button class="btn bg-border text-text-primary hover:bg-gray-300 text-sm px-4 py-2">Provide Guidelines</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Escalation Tracking -->
+                <div class="bg-surface rounded-lg shadow-card p-6">
+                    <h3 class="text-xl font-semibold text-text-primary mb-4">Escalation Metrics</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="bg-error-100 w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-8 h-8 text-error-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.888-.833-2.598 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-2xl font-bold text-text-primary mb-1">12</h4>
+                            <p class="text-text-secondary">Open Cases</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="bg-success-100 w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-8 h-8 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-2xl font-bold text-text-primary mb-1">89</h4>
+                            <p class="text-text-secondary">Resolved This Month</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="bg-primary-100 w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-2xl font-bold text-text-primary mb-1">2.4</h4>
+                            <p class="text-text-secondary">Avg Resolution Days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Management Tab -->
+        <div id="system-tab" class="tab-content">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-text-primary mb-4">System Configuration</h1>
+                
+                <!-- Configuration Panel -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Credit System Settings -->
+                    <div class="bg-surface rounded-lg shadow-card p-6">
+                        <h3 class="text-xl font-semibold text-text-primary mb-4">Credit Exchange Settings</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-text-primary mb-2">Base Credit Rate (AUD per credit)</label>
+                                <input type="number" value="1.50" step="0.01" class="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-text-primary mb-2">Transaction Fee (%)</label>
+                                <input type="number" value="2.5" step="0.1" class="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-text-primary mb-2">Daily Transaction Limit</label>
+                                <input type="number" value="500" class="w-full border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                            </div>
+                            <button class="btn btn-primary w-full">Update Settings</button>
+                        </div>
+                    </div>
+
+                    <!-- Platform Policies -->
+                    <div class="bg-surface rounded-lg shadow-card p-6">
+                        <h3 class="text-xl font-semibold text-text-primary mb-4">Platform Policies</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-text-primary">Auto-approve services under 50 credits</p>
+                                    <p class="text-sm text-text-secondary">Automatically approve low-value services</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer" />
+                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-text-primary">Require ID verification for providers</p>
+                                    <p class="text-sm text-text-secondary">Mandate identity verification for service providers</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer" />
+                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-text-primary">Enable anonymous reviews</p>
+                                    <p class="text-sm text-text-secondary">Allow users to leave anonymous feedback</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" />
+                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security & Access Control -->
+                <div class="bg-surface rounded-lg shadow-card p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-text-primary mb-4">Security Monitoring</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <svg class="w-6 h-6 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.888-.833-2.598 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"/>
+                            </svg>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-text-primary mb-1">Unusual Login Pattern Detected</h4>
+                                <p class="text-sm text-text-secondary mb-2">Multiple failed login attempts from IP: 192.168.1.100</p>
+                                <button class="btn bg-yellow-600 text-white hover:bg-yellow-700 text-sm px-3 py-1">Block IP</button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-text-primary mb-1">System Backup Completed</h4>
+                                <p class="text-sm text-text-secondary">Daily backup completed successfully at 2:00 AM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature Toggles -->
+                <div class="bg-surface rounded-lg shadow-card p-6">
+                    <h3 class="text-xl font-semibold text-text-primary mb-4">Feature Management</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <h4 class="font-medium text-text-primary">Core Features</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-text-primary">Messaging System</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer" />
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-text-primary">Review & Rating System</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer" />
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-text-primary">Real-time Notifications</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer" />
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <h4 class="font-medium text-text-primary">Experimental Features</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-text-primary">AI-powered Skill Matching</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" />
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-text-primary">Video Call Integration</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" />
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-text-primary">Mobile Push Notifications</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer" />
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface border-t border-border mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <p class="text-text-secondary text-sm">© 2025 FUSS Platform Administration. All Rights Reserved.</p>
+                <p class="text-text-secondary text-xs mt-2">Secure Admin Panel - Flinders University</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab Management
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => {
+                btn.classList.remove('active', 'text-primary', 'border-b-2', 'border-primary', 'pb-1');
+                btn.classList.add('text-text-secondary');
+            });
+            
+            // Show selected tab
+            const selectedTab = document.getElementById(tabName + '-tab');
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Style active button
+            event.target.classList.remove('text-text-secondary');
+            event.target.classList.add('active', 'text-primary', 'border-b-2', 'border-primary', 'pb-1');
+        }
+
+        // Real-time Updates Simulation
+        function updateDashboard() {
+            // Simulate real-time data updates
+            const activeUsers = document.querySelector('.stat-card:first-child .text-3xl');
+            if (activeUsers) {
+                let currentValue = parseInt(activeUsers.textContent.replace(',', ''));
+                activeUsers.textContent = (currentValue + Math.floor(Math.random() * 10 - 5)).toLocaleString();
+            }
+        }
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update dashboard metrics every 30 seconds
+            setInterval(updateDashboard, 30000);
+            
+            // Add hover effects to stat cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '';
+                });
+            });
+
+            // Initialize chart placeholders (would integrate with actual charting library)
+            console.log('Dashboard initialized - Ready for real-time data integration');
+        });
+
+        // Mock Functions for Admin Actions
+        function blockUser(userId) {
+            console.log('Blocking user:', userId);
+            // Implement actual user blocking logic
+        }
+
+        function approveService(serviceId) {
+            console.log('Approving service:', serviceId);
+            // Implement service approval logic
+        }
+
+        function resolveDispute(disputeId) {
+            console.log('Resolving dispute:', disputeId);
+            // Implement dispute resolution logic
+        }
+
+        function updateSystemSettings() {
+            console.log('Updating system settings');
+            // Implement system configuration updates
+        }
+
+        // Export functionality
+        function exportData(type) {
+            console.log('Exporting', type, 'data');
+            // Implement data export functionality
+        }
+
+        // Notification management
+        function markAllNotificationsRead() {
+            const alertCount = document.querySelector('.bg-error-500');
+            if (alertCount) {
+                alertCount.textContent = '0';
+            }
+        }
+
+        // System health monitoring
+        function checkSystemHealth() {
+            // Simulate system health check
+            const healthIndicator = document.querySelector('.activity-indicator');
+            healthIndicator.style.backgroundColor = Math.random() > 0.1 ? '#22c55e' : '#ef4444';
+        }
+
+        // Run health check every 2 minutes
+        setInterval(checkSystemHealth, 120000);
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>
